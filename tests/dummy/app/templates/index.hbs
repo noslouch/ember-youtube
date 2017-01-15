@@ -24,24 +24,27 @@
 
 <section>
 	<h3>The player</h3>
-	{{ember-youtube
-		ytid=youTubeId
-		volume=volume
-		playerVars=customPlayerVars
-		showControls=false
-		showProgress=true
-		showDebug=true
-		lazyload=false
+	{{loadAndCreatePlayerIsRunning}}<br>
+	<button {{action "toggleVideo"}}>Toggle video</button><br>
+	{{#unless hideVideo}}
+		{{ember-youtube
+			ytid=youTubeId
+			volume=volume
+			playerVars=customPlayerVars
+			showControls=false
+			showProgress=true
+			showDebug=true
+			lazyload=true
 
-		delegate=this
-		delegate-as="emberYoutube"
+			delegate=this
+			delegate-as="emberYoutube"
 
-		playing="ytPlaying"
-		paused="ytPaused"
-		ended="ytEnded"}}
+			playing="ytPlaying"
+			paused="ytPaused"
+			ended="ytEnded"}}
+	{{/unless}}
 </section>
 
 <p>Multiple players on the same route are supported as well.</p>
-{{ember-youtube ytid="NEFrNP-BLcI"}}
 
 <p>Here's {{link-to "another video" "video" "jmCytJPqQis"}}.</p>

@@ -2,7 +2,7 @@
 
 import Ember from 'ember';
 
-const {computed, debug, observer, on, run, RSVP, $} = Ember;
+const {computed, get, debug, observer, on, run, RSVP, $} = Ember;
 
 export default Ember.Component.extend({
 	classNames: ['EmberYoutube'],
@@ -50,8 +50,16 @@ export default Ember.Component.extend({
 		});
 	}),
 
+	log() {
+		console.log({
+			isDestroyed: get(this, 'isDestroyed'),
+			isDestroying: get(this, 'isDestroying')
+		});
+	},
+
 	didInsertElement() {
 		this._super(...arguments);
+		this.log();
 		if (!this.get('lazyload') && this.get('ytid')) {
 			// If "lazyload" is not enabled and we have an ID, we can start immediately.
 			// Otherwise the `loadVideo` observer will take care of things.
@@ -66,12 +74,16 @@ export default Ember.Component.extend({
 		let isRunning = this.get('loadAndCreatePlayerIsRunning');
 		if (isRunning) {
 			// some ember-concurrency would be nice here
+			Ember.debug('already running');
 			return;
 		}
 		this.set('loadAndCreatePlayerIsRunning', true);
 		const promise = new RSVP.Promise((resolve, reject) => {
+			this.log();
 			this.loadYouTubeApi().then(() => {
+				Ember.debug('loaded api');
 				this.createPlayer().then(player => {
+					Ember.debug('created player');
 					this.setProperties({
 						player,
 						playerState: 'ready'
@@ -89,9 +101,9 @@ export default Ember.Component.extend({
 		});
 		// The `wait` helper waits for this run loop,
 		// but not the above promise, which is what i want.
-		if (Ember.testing) {
-			run.later(() => {}, 5000);
-		}
+		// if (Ember.testing) {
+		// 	run.later(() => {}, 5000);
+		// }
 		return promise;
 	},
 
@@ -128,6 +140,7 @@ export default Ember.Component.extend({
 		// const iframe = this.element.querySelector('#EmberYoutube-player');
 		const iframe = this.$('#EmberYoutube-player');
 		let player;
+		this.log();
 		return new RSVP.Promise((resolve, reject) => {
 			if (!iframe) {
 				reject(`Couldn't find the iframe element to create a YouTube player`);
@@ -138,6 +151,7 @@ export default Ember.Component.extend({
 				playerVars,
 				events: {
 					onReady() {
+						Ember.debug('player onready');
 						resolve(player);
 					},
 					onStateChange: this.onPlayerStateChange.bind(this),

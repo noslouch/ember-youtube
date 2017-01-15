@@ -10,7 +10,7 @@ moduleForAcceptance('Acceptance | video');
 // 	});
 // });
 
-test('visiting /video', function(assert) {
+test('visiting /video renders a video', function(assert) {
 	assert.expect(2);
 	visit('/video/jmCytJPqQis');
 	andThen(() => {

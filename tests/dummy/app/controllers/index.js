@@ -10,7 +10,12 @@ export default Ember.Controller.extend({
 		showinfo: 0 // hide uploader info
 	},
 
+	hideVideo: true,
+
 	actions: {
+		toggleVideo() {
+			this.toggleProperty('hideVideo');
+		},
 		ytPlaying() {
 			Ember.debug('on playing from controller');
 		},
