@@ -9,13 +9,13 @@
 <p>You can play, pause, mute and unmute the component from the surrounding controller:</p>
 
 <section>
-	<button {{action "togglePlay" target=emberYoutube}}>
+	<button {{action "togglePlayback"}}>
 		{{if emberYoutube.isPlaying "Pause" "Play"}}
 	</button>
-	<button {{action "toggleVolume" target=emberYoutube}}>
+	<button {{action "toggleVolume"}}>
 		{{if emberYoutube.isMuted "Unmute" "Mute"}}
 	</button>
-	<button {{action "seekTo" 90 target=emberYoutube}}>
+	<button {{action "seekTo" 90}}>
 		Seek to 01:30
 	</button>
 </section>
@@ -28,17 +28,13 @@
 		ytid=youTubeId
 		volume=volume
 		playerVars=customPlayerVars
-		showControls=false
-		showProgress=true
-		showDebug=true
-		lazyload=false
-
-		delegate=this
-		delegate-as="emberYoutube"
-
-		playing="ytPlaying"
-		paused="ytPaused"
-		ended="ytEnded"}}
+		onReady=(action "ready")
+		onPlaying=(action "playing")
+		onPaused=(action "paused")
+		onBuffering=(action "buffering")
+		onEnded=(action "ended")
+		onError=(action "handleError")
+	}}
 </section>
 
 <p>Multiple players on the same route are supported as well.</p>

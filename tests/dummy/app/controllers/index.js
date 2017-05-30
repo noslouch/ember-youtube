@@ -6,23 +6,38 @@ export default Ember.Controller.extend({
 
 	customPlayerVars: {
 		autoplay: 1,
-		rel: 0, // disable related videos
-		showinfo: 0 // hide uploader info
 	},
 
 	actions: {
-		ytPlaying() {
+		togglePlayback() {},
+		toggleVolume() {},
+		togglePlayback() {},
+
+
+		// These actions are sent from {{ember-youtube}} in the template.
+
+		// Here we get access to the YouTube player instance,
+		// as well as the ember-youtube component.
+		ready(player, emberYoutube) {
+			console.log('ready controller')
+			// this.set('player', player);
+			this.set('emberYoutube', emberYoutube);
+		},
+		playing() {
 			Ember.debug('on playing from controller');
 		},
-		ytPaused() {
+		paused() {
 			Ember.debug('on paused from controller');
 		},
-		ytEnded() {
+		ended() {
 			Ember.debug('on ended from controller');
-			// here you could load another video by changing the youTubeId
+			// Here you could load another video by changing the youTubeId.
 		},
-		ytBuffering() {
+		buffering() {
 			Ember.debug('on buffering from controller');
+		},
+		handleError() {
+			Ember.debug('error from yt player - handled in our controller')
 		}
 	}
 });

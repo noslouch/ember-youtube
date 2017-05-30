@@ -4,6 +4,40 @@ An Ember.js component to play and control YouTube videos using the iframe API. P
 
 You can see a demonstration at [ember-youtube.surge.sh](http://ember-youtube.surge.sh).
 
+
+
+
+
+```hbs
+{{ember-youtube
+	ytid="123"
+}}
+```
+
+## Actions
+
+onPlayerReady(player)
+onPlayerError(err)
+onPlayerStateChange(player)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## Features
 
 - Full support for all YouTube player events (and errors)
@@ -42,8 +76,7 @@ Here's another example with all options. Only `ytid` is required.
 	showControls=false
 	showProgress=false
 	lazyload=false
-	delegate=this
-	delegate-as="emberYoutube"
+	playerCreated="savePlayer"
 	playing="ytPlaying"
 	paused="ytPaused"
 	ended="ytEnded"
@@ -68,18 +101,10 @@ myPlayerVars: {
 
 ## External controls
 
-If you want your own buttons to control the player there are two steps.
-
-1) Make the ember-youtube component available to the outside, which normally means your controller. You do this with the `delegate` and `delegate-as` properties of ember-youtube. They expose the component and give you a target for your button's actions. Like this:
+If you want your own buttons to control the player, the ember-youtube components sends a `playerCreated` action with two arguments. First the YouTube player instance, secondly the ember-youtube component instance. With these, you should be able to do pretty much anything the YouTube iframe API allows. Here's an example:
 
 ```hbs
-{{ember-youtube ytid=youTubeId delegate=controller delegate-as="emberYoutube"}}
-```
-
-2) Specify a target on your actions. Now, and because we used `delegate` and `delegate-as`, you'll have a `emberYoutube` property on your controller. This is where we'll target our actions. It allows you to do this in the template where you include the player:
-
-```hbs
-{{ember-youtube ytid="fZ7MhTRmJ60" delegate=this delegate-as="emberYoutube"}}
+{{ember-youtube ytid="fZ7MhTRmJ60" playerCreated="savePlayer"}}
 <button {{action "togglePlay" target=emberYoutube}}>
 	{{#if emberYoutube.isPlaying}}Pause{{else}}Play{{/if}}
 </button>
@@ -88,14 +113,15 @@ If you want your own buttons to control the player there are two steps.
 </button>
 ```
 
-You could also do this:
+... and then in your controller do:
 
-```hbs
-{{ember-youtube ytid="fZ7MhTRmJ60" delegate=this delegate-as="emberYoutube"}}
-<button {{action "play" target=emberYoutube}}>Play</button>
-<button {{action "pause" target=emberYoutube}}>Pause</button>
-<button {{action "mute" target=emberYoutube}}>Mute</button>
-<button {{action "unMute" target=emberYoutube}}>Unmute</button>
+```
+actions: {
+  savePlayer(player emberYoutube) {
+    this.set('player', player');
+    this.set('emberYoutube', emberYoutube');
+  }
+}
 ```
 
 ## Seeking
@@ -104,7 +130,7 @@ Here's an example of seeking to a certain timestamp in a video. It accepts a num
 
 ```hbs
 <button {{action "seekTo" 90 target=emberYoutube}}>Seek to 01:30</button>
-{{ember-youtube ytid="fZ7MhTRmJ60" delegate=this delegate-as="emberYoutube"}}
+{{ember-youtube ytid="fZ7MhTRmJ60" playerCreated="savePlayer"}}
 ```
 
 ## Events
@@ -150,12 +176,8 @@ Even if you don't supply an `ytid` to the ember-youtube component, it will make 
 Let's write a component with two custom formatted timestamps such as "13:37". First make sure moment and moment-duration-format are installed. Then create a new component with the following template:
 
 ```hbs
-{{ember-youtube ytid=youTubeId delegate=this delegate-as="emberYoutube"}}
-
-// custom timestamp
-<p class="EmberYoutube-time">
-	{{currentTimeFormatted}}/{{durationFormatted}}
-</p>
+{{ember-youtube ytid=youTubeId playerCreated="savePlayer"}}
+<p>Timestamps: {{currentTimeFormatted}} / {{durationFormatted}}</p>
 ```
 
 And here's the JavaScript part of the component:
